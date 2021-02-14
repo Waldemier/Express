@@ -1,0 +1,35 @@
+<h1>Edit</h1>
+
+<form method="POST" action="/courses/edit" class="edit-form"> <!--Шлях який задається - це js файли до яких буде здійснений запит-->
+
+    <div class="edit-field">
+        <input id="title" name="title" type="text" class ="validate" required value="{{course.title}}">
+        <label for="title">Course title</label>
+        <span class="helper-text" data-error="Add course name"></span>
+    </div>
+        
+    <div class="edit-field">
+        <input id="price" name="price" type="text" class ="validate" min="1" required value = "{{course.price}}">
+        <label for="price">Price</label>
+        <span class="helper-text" data-error="Specify the price"></span>
+    </div>
+    
+    <div class="edit-field">
+        <input id="img" name="url" type="text" class ="validate" required value = "{{course.url}}">
+        <label for="img">URL images</label>
+        <span class="helper-text" data-error="Add images"></span>
+    </div>
+
+    <input type="hidden" name="id" value="{{course.id}}">
+
+    <input type="hidden" name="_csrf" value="{{csurf}}">
+    <br><button type="submit" class="btn btn-primary">Edit course</button>
+
+</form>
+
+<form action="/courses/remove" method="POST">
+    <input type="hidden" name="id" value={{course.id}}>
+    <input type="hidden" name="_csrf" value="{{csurf}}">
+    <button type="submit" class="btn red">Delete</button>
+</form>
+
