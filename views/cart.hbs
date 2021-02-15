@@ -2,32 +2,32 @@
 
 <div id="cart">
 
-{{#if courses.length}}
-    <table>
-        <thead>
-            <th>Title</th>
-            <th>Amount</th>
-            <th>Action</th>
-        </thead>
-        <tbody>
-            {{#each courses}}
-            <tr>
-                <td>{{title}}</td>
-                <td>{{amount}}</td>
-                <td><button class="btn btm-small js-remove" data-id="{{id}}" data-csrf="{{@root.csurf}}">Delete</button></td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
-    <p><strong>Total:</strong> <span class="price">{{price}}</span></p>
+    {{#if courses.length}}
+        <table>
+            <thead>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {{#each courses}}
+                <tr>
+                    <td>{{title}}</td>
+                    <td>{{amount}}</td>
+                    <td><button class="btn btm-small js-remove" data-id="{{id}}" data-csrf="{{@root.csurf}}">Delete</button></td> <!-- Звідки цей csurf ? пояснення в iAuthMiddleWare файл-->
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <p><strong>Total:</strong> <span class="price">{{price}}</span></p>
 
-    <form action="/orders" method="POST"> <!-- Перенаправляє до orders.js файла -->
-        <input type="hidden" name="_csrf" value="{{csurf}}">
-        <button type="submit" class="btn">Make an order</button>
-    </form>
+        <form action="/orders" method="POST"> <!-- Перенаправляє до orders.js файла -->
+            <input type="hidden" name="_csrf" value="{{csurf}}">
+            <button type="submit" class="btn">Make an order</button>
+        </form>
 
-{{else}}
-    <p>Cart is empty</p>
-{{/if}}
+    {{else}}
+        <p>Cart is empty</p>
+    {{/if}}
 
 </div>

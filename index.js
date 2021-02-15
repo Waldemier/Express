@@ -32,6 +32,7 @@ const csurf = require('csurf') // npm // Спеціальний токен дл�
 
 const flash = require('connect-flash') //npm
 const CONFIGURE_VALUES = require('./configuration/configurationKeys') //Винесені деякі головні константи цього проекту в окремий файл
+const HANDLEBARS_HELPER_UTILITS = require('./utils/handlebars-helper')
 
 //const UserModel = require('./models/userModel') //Users Table
 
@@ -48,7 +49,8 @@ const express_app = express(); //Аналогія до http.createServer()
 const handlebars = expressHandlebars.create({
     defaultLayout: 'main',    
     extname: 'hbs', //По дефолту handlebars (Задаємо розшир   ення, яке буде застосоване для документів шаблонізатора (і до самого шаблонізатора))
-    handlebars: allowInsecurePrototypeAccess(Handlebars)
+    handlebars: allowInsecurePrototypeAccess(Handlebars),
+    helpers: HANDLEBARS_HELPER_UTILITS
 });
 
 //Створення коллекції в якій будуть зберігатися сесії в бд. 

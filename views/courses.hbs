@@ -17,7 +17,11 @@
             <a href="/courses/{{id}}" target="_blank">About</a> <!-- target= "_blank" - властивість, яка, при натисканні на кнопку, відкриває сторінку в новій вкладці -->
 
             {{#if @root.isAuth}}
-              <a href="/courses/{{id}}/edit?allow=true" >Edit</a>
+
+                {{#ifEqual userId._id @root.userId}} <!--userId._id, а не просто userId, оскільки ми робили популейт-->
+                  <a href="/courses/{{id}}/edit?allow=true" >Edit</a>
+                {{/ifEqual}}
+                
               <form action="/cart/add" method="POST">
                 <input type="hidden" name="id" value="{{id}}">
                 <input type="hidden" name="_csrf" value="{{@root.csurf}}"> <!--Оскільки знаходимось в циклі each - використовуємо root, щоб бачити глобальні змінні response-->

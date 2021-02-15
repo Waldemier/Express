@@ -5,6 +5,8 @@ const userModel = new Schema({
     userName: { type: String, required: true },
     password: { type: String, required: true },
     email: { type: String, required: true },
+    resetToken: String,
+    resetTokenExpiration: Date,
     cartData: { items: [ 
                             {
                                 amount: { type: Number, required: true, default: 1 },

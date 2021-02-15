@@ -28,8 +28,8 @@ router.delete('/remove/:id', async (request, response) => {
     const cart = { 
         courses, price: computeCurrency(courses)
     }
-    //Вроді як повертаємо нашій формі яка міняє данні в режимі реального часу
-    response.status(200).json(cart) //Повертаємо оновлені данні браузеру в режимі реального часу (оскільки ми повертаємо данні бразеру => конвертуємо у json)
+
+    response.status(200).json(cart) //Повертаємо оновлені данні у fetch (app.js файлу)
 })
 
 //Повертаэмо масив об'єктів з потрібними нам параментрами курсів
@@ -78,7 +78,7 @@ router.get('/', async (request, response) => {
     const userCart = await request.userCreatedTest.populate('cartData.items.courseId').execPopulate()
     const courses = mapCartItems(userCart.cartData)
     //console.log(courses[0])
-    response.render('cart', { isCart: true, title: "Cart", courses: courses, price: computeCurrency(courses)});
+    response.render('cart', { isCart: true, title: "Cart", courses: courses, price: computeCurrency(courses) });
     //console.log(userCart.cartData.items)
     //console.log(require.userCreatedTest.cartData.items[0].courseId._doc)
     //console.log(userCart.cartData.items[0].courseId._doc)

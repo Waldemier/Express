@@ -21,10 +21,12 @@ if($cartHtml)
     $cartHtml.addEventListener('click', event => { 
         //Перевірка на те, чи подія спрацювала саме на тому елементі, який нам потрібен (кнопка з класом js-remove)
         if(event.target.classList.contains('js-remove'))
-        {
+        {   
+            
             const courseId = event.target.dataset.id; // Доступилися до властивості data-id нашої кнопки
             const csurf = event.target.dataset.csrf;
-            //console.log(courseId)
+            console.log(csurf)
+            console.log(courseId)
             fetch("/cart/remove/" + courseId, { method: "DELETE", headers: { 'X-XSRF-TOKEN': csurf }})
                 .then(data => data.json())
                 .then(cart => {
@@ -36,7 +38,7 @@ if($cartHtml)
                                 <tr>
                                     <td>${c.title}</td>
                                     <td>${c.amount}</td>
-                                    <td><button class="btn btm-small js-remove" data-id="${c.id}">Delete</button></td>
+                                    <td><button class="btn btm-small js-remove" data-id="${c.id}" data-csrf="${csurf}">Delete</button></td>
                                 </tr>
                             `
                         }).join('')
