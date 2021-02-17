@@ -1,5 +1,4 @@
 # Express
-Express course by udemy
 
 Project: Courses store
 
