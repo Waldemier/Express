@@ -1,8 +1,8 @@
-module.exports = {
-    MONGO_URI: 'mongodb+srv://DataAdmin:b9UtLa0wMBYu0iQB@cluster0.qk2hz.mongodb.net/<dbname>?retryWrites=true&w=majority',
-    SESSION_SECRET_VALUE: 'Cryptography secret',
-    EMAIL_FROM: 'store@gmail.com',
-    BASE_URL: 'http://localhost:3000',
-    MIN_PASS_SYMBOLS: 5,
-    MAX_PASS_SYMBOLS: 21
+if(process.env.NODE_ENV === 'production')
+{
+    module.exports = require('./production.keys')
+}
+else
+{
+    module.exports = require('./dev.keys')
 }

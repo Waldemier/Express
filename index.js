@@ -12,7 +12,7 @@ const mongoose = require('mongoose')
 
 const express = require('express')
 const path = require('path')
-const expressHandlebars = require('express-handlebars') //npm
+const expressHandlebars = require('express-handlebars') //npm || handlebars допомагають спростити роботу створення сторінок ({{>partial}}, {{{{html}}}}, {{variables}} (які передаються в сторінку через render)).  
 const homeRouter = require('./routes/home')
 const coursesRouter = require('./routes/courses')
 const addRouter = require('./routes/add')
@@ -37,6 +37,8 @@ const HANDLEBARS_HELPER_UTILITS = require('./utils/handlebars-helper')
 const NotFound404Middleware = require('./middleware/NotFound')
 
 const fileMiddleware = require('./middleware/fileDownload')
+const compression = require('compression') //npm пакет для зжимання static файлів (для підвищення продуктивності додатка)
+const helmet = require('helmet') //npm пакет для передавання додаткових захисних хедерів 
 
 //const UserModel = require('./models/userModel') //Users Table
 
@@ -103,10 +105,15 @@ express_app.use(session({
 
 //При підключенні нових мідлвеєрів у request'a з'являються нові поля, доприкладу такі як: request.csrfToken(), request.file, і тд.
 
-express_app.use(fileMiddleware.single('avatar')) //single - тільки один файл буде завантажуватись, з дефолтним полем avatar.
+
+express_app.use(fileMiddleware.single('avatar')); //single - тільки один файл буде завантажуватись, з дефолтним полем avatar.
 //csurf пакет дає нам додатковий захист даних від зловмисників
 express_app.use(csurf()); //Добавлений в response.local у isAuthMiddleWare файлі, оскільки шифрований ключ повинен повертатись на сторону клієнта.
 express_app.use(flash()); //Мідлвейр для обробки помилок. Ex: request.flash('error', 'Somehappened')
+express_app.use(helmet({ contentSecurityPolicy: { directives: { "default-src": ['*'], "img-src": ['*'], "script-src": ['*'] } } })); // {contentSecurityPolicy: false} - Альтернатива виправлення помилок з ContentSecurityPolicy
+                                                                                                                                            // Захист додатку від завантажуваного користувачем контенту з інших джерел (наразі дозволяємо все)
+express_app.use(compression()); //Пакет для стискання статичних файлів, зарахунок чого підвищується продуктивність.
+
 
 //Використовувалось до створення сесії
 
