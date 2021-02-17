@@ -14,22 +14,28 @@ router.post('/add', async (require, response) => {
 
 
 router.delete('/remove/:id', async (request, response) => {
-    //const cart = await CartModel.remove(require.params.id); //params тому, що id у нас в адресній стрічці
+    try {
 
-    await request.userCreatedTest.removeFromCart(request.params.id);
-    //Головне завдання популейта - розкривати данні (в нашому випадку ми розкриваємо данні курсу по ключу, який зберігається в моделі(таблиці) юзера)
-    //Якщо данні не будуть розкриті через популейт, то ми зможемо доступитися тільки до айді курсу, но не його даних.
-    //Метод execPopulate() саме виконує запит всередині популейта.
-    const user = await request.userCreatedTest.populate('cartData.items.courseId').execPopulate(); 
-    // console.log(user.cartData.items[0].courseId._id)
-    // console.log(user)
-    const courses = mapCartItems(user.cartData)
+        //const cart = await CartModel.remove(require.params.id); //params тому, що id у нас в адресній стрічці
 
-    const cart = { 
-        courses, price: computeCurrency(courses)
+        await request.userCreatedTest.removeFromCart(request.params.id);
+        //Головне завдання популейта - розкривати данні (в нашому випадку ми розкриваємо данні курсу по ключу, який зберігається в моделі(таблиці) юзера)
+        //Якщо данні не будуть розкриті через популейт, то ми зможемо доступитися тільки до айді курсу, но не його даних.
+        //Метод execPopulate() саме виконує запит всередині популейта.
+        const user = await request.userCreatedTest.populate('cartData.items.courseId').execPopulate(); 
+        // console.log(user.cartData.items[0].courseId._id)
+        // console.log(user)
+        const courses = mapCartItems(user.cartData)
+
+        const cart = { 
+            courses, price: computeCurrency(courses)
+        }
+
+        response.status(200).json(cart) //Повертаємо оновлені данні у fetch (app.js файлу)
+        
+    } catch (e) {
+        console.error(e);
     }
-
-    response.status(200).json(cart) //Повертаємо оновлені данні у fetch (app.js файлу)
 })
 
 //Повертаэмо масив об'єктів з потрібними нам параментрами курсів

@@ -1,6 +1,10 @@
 <h1>Edit</h1>
 
-<form method="POST" action="/courses/edit" class="edit-form"> <!--Шлях який задається - це js файли до яких буде здійснений запит-->
+<form method="POST" action="/courses/edit" class="edit-form" novalidate> <!--Шлях який задається - це js файли до яких буде здійснений запит-->
+
+    {{#if errors}}
+        <p class='alertError'>{{errors}}</p>
+    {{/if}}
 
     <div class="edit-field">
         <input id="title" name="title" type="text" class ="validate" required value="{{course.title}}">

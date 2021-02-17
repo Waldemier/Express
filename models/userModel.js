@@ -7,6 +7,7 @@ const userModel = new Schema({
     email: { type: String, required: true },
     resetToken: String,
     resetTokenExpiration: Date,
+    avatarProfileUrl: String,
     cartData: { items: [ 
                             {
                                 amount: { type: Number, required: true, default: 1 },

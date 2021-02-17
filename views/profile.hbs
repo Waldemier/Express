@@ -1,0 +1,43 @@
+<h1>{{title}}</h1>
+
+<div class="row">
+    <div class="col s6">
+
+        {{#if user.avatarProfileUrl}}
+            <img class="avatarProfile" src="{{user.avatarProfileUrl}}" alt="avatar-{{user.userName}}">
+        {{else}}
+            <p>Avatar not found</p>
+        {{/if}}
+        
+    </div>
+
+    <div class="col s6">
+
+        <form method="POST" action="/profile" enctype="multipart/form-data"> <!---enctype=... Тим ми вказали, що форма працює з файлами-->
+            <p>Your email: <strong>{{user.email}}</strong></p>
+
+            <div class="input-field">
+                <input id="name" name="name" type="text" class ="validate" value="{{user.userName}}" required>
+                <label for="name">Name</label>
+                <span class="helper-text" data-error="Add name"></span>
+            </div>
+
+            <!--Materialize component-->
+            <div class="file-field input-field">
+
+                <div class="btn">
+                    <span>Image</span>
+                    <input type="file" name="avatar">
+                </div>
+
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text">
+                </div>
+
+            </div>
+            <input type="hidden" name="_csrf" value="{{csurf}}">
+            <button type="submit" class="btn">Save</button>
+        </form>
+
+    </div>
+</div>

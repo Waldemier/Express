@@ -4,7 +4,10 @@ const {Router} = require('express')
 const CourseModel = require('../models/courseModel.js')
 const router = Router();
 const protectionMiddleware = require('../middleware/routeProtection')
+const { coursesValidators } = require('../utils/validators')
+const { validationResult } = require('express-validator/check')
 
+//render - рендерить сторінку hbs. redirect - переходить по url на вказану адресу
 
 router.get('/', async (request, response) => {
    
@@ -36,43 +39,43 @@ router.get('/', async (request, response) => {
 
 router.get('/:id', async (request, response) => {
 
-    try
-    {
+   try
+   {
       // const course = await CourseModel.getCourseById(request.params.id); //Повернули об'єкт з заданим id
 
       //from mongoose method
       const course = await CourseModel.findById(request.params.id);
-      response.render('course', { layout: 'empty', title: course.title, course })
+      response.render('course', { layout: 'empty', title: course.title, course }) //layout - шаблон, який буде виводити відрендерені данні файлу course.hbs
 
-    } catch(e)
-    {
-      console.error(e);
-    }
+   } catch(e)
+   {
+      return response.status(404).render('404', { message: 'Course not found' , errors: e})
+   }
     
 })
 
 
  router.get('/:id/edit', protectionMiddleware, async (request, response) => {
 
-   if(!request.query.allow) response.redirect('/'); //Якщо в url не буде присутня змінна allow -> redirect
+   if(!request.query.allow) { return response.redirect('/'); } //Якщо в url не буде присутня змінна allow -> redirect
+   
    //const course = await CourseModel.getCourseById(request.params.id)
 
    try {
-   //from mongoose method
-   const course = await CourseModel.findById(request.params.id)
-   if(course.userId.toString() === request.userCreatedTest._id.toString())
-   {
-      response.render('course-edit', { title: "Edit", course } )
-   }
-   else
-   {
-      response.redirect('/courses');
-   }
+      //from mongoose method
+      const course = await CourseModel.findById(request.params.id)
+      if(course.userId.toString() === request.userCreatedTest._id.toString())
+      {
+         response.render('course-edit', { title: "Edit", course,  errors: request.flash('editError') } )
+      }
+      else
+      {
+         response.redirect('/courses');
+      }
 
    } catch(e) {
 
       console.error(e)
-
    }
 
 })
@@ -91,11 +94,20 @@ router.post('/remove', async (request, response) => {
      
 })
 
-router.post('/edit', protectionMiddleware, async (request, response) => {
+router.post('/edit', protectionMiddleware, coursesValidators, async (request, response) => {
 
    //await CourseModel.update(request.body); //Використовувалось, коли ми самі проектували методи (до використання дб)
    try {
+      
       const course = await CourseModel.findOne({ _id: request.body.id })
+
+      const errors = validationResult(request)
+      if(!errors.isEmpty())
+      {
+         request.flash('editError', errors.array()[0].msg)
+         return response.status(422).redirect(`/courses/${request.body.id}/edit?allow=true`)
+      }
+
       if(course.userId.toString() === request.userCreatedTest._id.toString())
       {
          //from mongoose method

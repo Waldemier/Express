@@ -6,7 +6,11 @@ const mailOptions = require('../email/registrationMailConfig')
 const crypto = require('crypto') //Встроєний пакет
 const resetMailOptions = require('../email/resetPasswordMailConfig')
 
+const { validationResult } = require('express-validator/check') //Імпорт властивості, яка відповідає за збереження та вивід помилок невдалих валідувань
+const { registrationValidators } = require('../utils/validators')
+
 //request - ті данні, які прийшли. response - то данні, що відсилаємо.
+//body - ті данні, які прийшли з форм через вказані властивості value. params - ті данні, які прийшли з url стрічки.
 
 const router = Router();
 
@@ -83,30 +87,31 @@ const transporter = nodemailer.createTransport({
 });
 
 
-router.post('/registration', async (request, response) => { 
+router.post('/registration', registrationValidators,  async (request, response) => { 
 
-    try{
+    try {
+
+        const errors = validationResult(request); //Перевірка request параметрів на успішно пройдену попередню валідність
+
+        if(!errors.isEmpty())
+        {
+            request.flash('regError', errors.array()[0].msg)
+            return response.status(422).redirect('/auth/login#register') //status(422) - вказує на те, що у нас були помилки з валідуванням даних. (Необов, але для покращення зрозумілості відповіді сервера в хедерах браузера)
+        }
 
         const { email, name, rpassword, confirm } = request.body; //request.body - отримує дані з форм.
                                                                  //request.params - отримує данні з адресного рядка.
-        const candidate = await UserModel.findOne({ email })
+
         //console.log(request.body) //В body ми отримуюємо name'и форми, яку ми відправляємо
-        if(candidate)
-        {
-            request.flash('regError', 'Such user already exists')
-            return response.redirect('/auth/login#register');
-        }
-        else
-        {   
-            const hash_password = await bcrypt.hash(rpassword, 10) //Другий параметр приймає значення, яке буде означати складність шифрування (Рекомендовано 10-12). Також це може бути стрічка.
-            const user = new UserModel({ userName:name, password: hash_password, email, cartData: { items: [] } })
-            await user.save();
+
+        const hash_password = await bcrypt.hash(rpassword, 10) //Другий параметр приймає значення, яке буде означати складність шифрування (Рекомендовано 10-12). Також це може бути стрічка.
+        const user = new UserModel({ userName:name, password: hash_password, email, cartData: { items: [] } })
+        await user.save();
 
 
-            transporter.sendMail(mailOptions(email), error => { if(error) console.error(error) })
+        transporter.sendMail(mailOptions(email), error => { if(error) console.error(error) })
 
-            response.redirect('/auth/login#login')
-        }
+        response.redirect('/auth/login#login')
 
 
     } catch(error) {
@@ -139,6 +144,7 @@ router.post('/reset', (request,response) => {
                 //console.log(Date.now())
                 //console.log(user.resetTokenExpiration)
                 await user.save();
+                //В даному випадку await не потрібен, все залежить від сервісу який використовується для відправки емейлів (можуть бути сервіси, такі як SendGrid, чий пакет повертає проміс)
                 await transporter.sendMail(resetMailOptions(user.email, token), error => { if(error) console.log(error) });
                 response.redirect('/auth/login#login')
 
